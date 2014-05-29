@@ -15,6 +15,17 @@ import javax.servlet.http.HttpServletResponse;
 public class HomeController {
 	
 	/*
+	 * controller for /
+	 */
+	public static void index(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+		RequestDispatcher rd = request
+				.getRequestDispatcher("/WEB-INF/template.jsp");		
+		request.setAttribute("title", "Index page");
+		request.setAttribute("message", "Welcome to index page");
+		rd.forward(request, response);
+	}
+	
+	/*
 	 * controller for /home
 	 */
 	public static void home(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{

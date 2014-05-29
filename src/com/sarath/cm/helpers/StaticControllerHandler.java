@@ -20,6 +20,7 @@ public class StaticControllerHandler extends ControllerHandler {
 
 	@Override
 	protected void feedUrlMap() {
+		getUrlMap().put("", "com.sarath.cm.controllers.HomeController.index");
 		getUrlMap().put("home", "com.sarath.cm.controllers.HomeController.home");
 		getUrlMap().put("login", "com.sarath.cm.controllers.HomeController.login");
 	}
