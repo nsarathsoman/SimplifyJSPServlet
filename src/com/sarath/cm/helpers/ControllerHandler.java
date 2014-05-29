@@ -16,33 +16,26 @@ import javax.servlet.http.HttpServletResponse;
 public abstract class ControllerHandler {
 
 	/*
-	 * Map<URL, Contoller>
-	 * Example : 
-	 * url = /any-url 
-	 * controller = className.methodName -->
-	 * class=org.ex.Class 
-	 * method = home there fore 
+	 * Map<URL, Contoller> Example : url = /any-url controller =
+	 * className.methodName --> class=org.ex.Class method = home there fore
 	 * controller = org.ex.Class.home
 	 */
-	protected Map<String, String> urlMap = new HashMap<String, String>();
-
-	protected HttpServletRequest request;
-	protected HttpServletResponse response;
+	private final Map<String, String> urlMap = new HashMap<String, String>();
 
 	public ControllerHandler() {
 		feedUrlMap();
 	}
 
 	/*
-	 * Any Custom ControllerHandler should use this method for feeding 
-	 * the url to controller mapping
+	 * Any Custom ControllerHandler should use this method for feeding the url
+	 * to controller mapping
 	 */
 	protected abstract void feedUrlMap();
 
 	/*
 	 * Searches urlMap for controllers
 	 */
-	protected String findController(String url) 
+	protected String findController(String url)
 			throws ControllerNotFoundException {
 		String controller = getUrlMap().get(url);
 		if (controller == null)
@@ -51,14 +44,11 @@ public abstract class ControllerHandler {
 	}
 
 	/*
-	 * Fetches url from request
-	 * Finds controller and gets the Controller class name and 
-	 * controller method name
+	 * Fetches url from request Finds controller and gets the Controller class
+	 * name and controller method name
 	 */
 	public final void invokeController(HttpServletRequest request,
 			HttpServletResponse response) throws IOException, ServletException {
-		this.request = request;
-		this.response = response;
 		try {
 			String fetchedUrl = request.getRequestURI().substring(
 					request.getContextPath().length() + 1);
@@ -66,60 +56,42 @@ public abstract class ControllerHandler {
 			int indexOfLastDot = controller.lastIndexOf(".");
 			String methodName = controller.substring(indexOfLastDot + 1);
 			String className = controller.substring(0, indexOfLastDot);
-			invokeControllerMethod(className, methodName);
+			invokeControllerMethod(className, methodName, request, response);
 		} catch (ControllerNotFoundException e) {
-			handleControllerNotFoundException();
+			handleControllerNotFoundException(request, response);
 		}
 
-	}	
+	}
 
 	/*
 	 * Invoke Controller method
 	 */
 	protected final void invokeControllerMethod(String className,
-			String methodName) throws ControllerNotFoundException {
+			String methodName, HttpServletRequest request,
+			HttpServletResponse response) throws ControllerNotFoundException {
 		try {
 			Class<?> controller = Class.forName(className);
 			Method controllerMethod = controller.getDeclaredMethod(methodName,
 					new Class[] { HttpServletRequest.class,
 							HttpServletResponse.class });
-			controllerMethod.invoke(null, new Object[] { getRequest(),
-					getResponse() });
+			controllerMethod.invoke(null, new Object[] { request, response });
 
 		} catch (Exception e) {
 			throw new ControllerNotFoundException();
 		}
 	}
-	
-	/*
-	 * Any Custom ControllerHandler should use this method to define the Controller Not Found Exception 
-	 */
-	protected abstract void handleControllerNotFoundException() throws ServletException, IOException;	
 
-	//getters and setters
-	
+	/*
+	 * Any Custom ControllerHandler should use this method to define the
+	 * Controller Not Found Exception
+	 */
+	protected abstract void handleControllerNotFoundException(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException;
+
+	// getters and setters
+
 	protected Map<String, String> getUrlMap() {
 		return urlMap;
-	}
-
-	protected void setUrlMap(Map<String, String> urlMap) {
-		this.urlMap = urlMap;
-	}
-
-	protected HttpServletRequest getRequest() {
-		return request;
-	}
-
-	protected void setRequest(HttpServletRequest request) {
-		this.request = request;
-	}
-
-	protected HttpServletResponse getResponse() {
-		return response;
-	}
-
-	protected void setResponse(HttpServletResponse response) {
-		this.response = response;
 	}
 
 }

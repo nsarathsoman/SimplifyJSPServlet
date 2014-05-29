@@ -3,6 +3,8 @@ package com.sarath.cm.helpers;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 /*
  * A Custom implementation of ControllerHanlder 
  * Controller are mapped with url's statically
@@ -23,12 +25,14 @@ public class StaticControllerHandler extends ControllerHandler {
 		getUrlMap().put("", "com.sarath.cm.controllers.HomeController.index");
 		getUrlMap().put("home", "com.sarath.cm.controllers.HomeController.home");
 		getUrlMap().put("login", "com.sarath.cm.controllers.HomeController.login");
-	}
+	}	
 
 	@Override
-	protected void handleControllerNotFoundException() throws ServletException, IOException {
-		getResponse().setStatus(404);
-		getRequest().getRequestDispatcher("/WEB-INF/error.jsp").forward(request, response);
+	protected void handleControllerNotFoundException(
+			HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		response.setStatus(404);
+		request.getRequestDispatcher("/WEB-INF/error.jsp").forward(request, response);
 	}
 
 }
